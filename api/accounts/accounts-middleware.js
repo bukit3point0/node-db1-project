@@ -30,8 +30,6 @@ exports.checkAccountPayload = async (req, res, next) => {
 }
 
 exports.checkAccountNameUnique = async (req, res, next) => {
-  // DO YOUR MAGIC
-  // checkAccountNameUnique returns a status 400 with a { message: "that name is taken" } if the trimmed req.body.name already exists in the database
   try {
     const accounts = await db.getAll()
     accounts.filter(account => {
