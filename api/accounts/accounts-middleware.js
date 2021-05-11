@@ -8,15 +8,15 @@ exports.checkAccountPayload = (req, res, next) => {
       res.status(400).json({
         message: `name and budget are required`
       })
-    } else if (typeof name !== string) {
+    } else if (typeof name !== "string") {
       res.status(400).json({
         message: `name of account must be a string`
       })
-    } else if (name.trim().length() < 3 || name.trim().length > 100) {
+    } else if (name.trim().length < 3 || name.trim().length > 100) {
       res.status(400).json({
         message: `name of account must be between 3 and 100`
       })
-    } else if (typeof budget !== number) {
+    } else if (typeof budget !== "number") {
       res.status(400).json({
         message: `budget of account must be a number`
       })
@@ -35,15 +35,18 @@ exports.checkAccountPayload = (req, res, next) => {
 // - `checkAccountNameUnique` returns a status 400 with a `{ message: "that name is taken" }` if the _trimmed_ `req.body.name` already exists in the database
 
 exports.checkAccountNameUnique = async (req, res, next) => {
+  const newAccount = req.body
+  console.log(newAccount)
   try {
     const accounts = await Accounts.getAll()
     accounts.filter(account => {
-      if (account.name === req.body.name.trim()) {
+      if (account.name === newAccount.name.trim()) {
         res.status(400).json({
           message: `that name is taken`
         })
       } else {
-        return account
+        req.body = accounts
+        next()
       }
     })
   } catch (err) {
@@ -55,10 +58,10 @@ exports.checkAccountNameUnique = async (req, res, next) => {
 
 exports.checkAccountId = async (req, res, next) => {
   try {
-    const account = await Accounts.getAll(req.params.id)
+    const account = await Accounts.getById(req.params.id)
     if(!account) {
       next({
-        status: 400,
+        status: 404,
         message: `account not found`
       })
     } else {
