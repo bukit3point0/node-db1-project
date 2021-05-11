@@ -14,7 +14,7 @@ router.get('/', (req, res, next) => {
   .catch(next)
 })
 
-router.get('/:id', checkAccountId, (req, res, next) => {
+router.get('/:id', checkAccountId, (req, res) => {
   res.json(req.account)
 })
 
