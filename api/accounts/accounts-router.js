@@ -15,13 +15,20 @@ router.get('/', (req, res, next) => {
 })
 
 router.get('/:id', checkAccountId, (req, res) => {
-  res.json(req.account)
+  Accounts.getById(req.params.id)
+  .then(account => {
+    res.status(200).json(account)
+  })
+  .catch(err => {
+    next(err)
+  })
 })
 
-router.post('/', checkAccountNameUnique, (req, res, next) => {
+router.post('/', checkAccountPayload, checkAccountNameUnique, (req, res, next) => {
   Accounts.create(req.body)
   .then(account => {
-    res.status(201).json(account)
+    const accountName = account.name.trim()
+    res.status(201).json({...account, name: accountName})
   })
   .catch(next)
 })
@@ -29,7 +36,7 @@ router.post('/', checkAccountNameUnique, (req, res, next) => {
 router.put('/:id', checkAccountPayload, checkAccountNameUnique, checkAccountId, (req, res, next) => {
   Accounts.updateById(req.params.id, req.body)
   .then(account => {
-    res.status(201).json(account)
+    res.status(200).json(req.body)
   })
   .catch(next)
 });
